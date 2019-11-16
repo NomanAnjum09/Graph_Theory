@@ -67,7 +67,7 @@ Label(root,  text="Please Wait While Loading ..." ,font=my_font).pack()
 
 
 
-progress= ttk.Progressbar(root, orient = 'horizontal', maximum = 3000, variable=downloaded, mode = 'determinate')
+progress= Progressbar(root, orient = 'horizontal', maximum = 3000, variable=downloaded, mode = 'determinate')
 progress.pack(fill=BOTH,side = BOTTOM)
 loading()
 #start = ttk.Button(root,text='start',command=loading)
