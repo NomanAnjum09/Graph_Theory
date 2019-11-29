@@ -1,23 +1,35 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Nov 16 18:53:50 2019
+import numpy as np
 
-@author: root
-"""
-#!/usr/bin/python
-from os import listdir
-from PIL import Image as PImage
+graph = np.array([[0,10,20,30,0,0],[0,0,0,0,0,7],[0,0,0,0,0,5],[0,0,0,0,10,0],[2,0,0,0,0,4],[0,5,7,0,6,0]])
 
-def loadImages(path):
-    # return array of images
+v = len(graph)
 
-    img = PImage.open(path)
-    return img
 
-path = "/root/Pictures/kruskal.png"
+def ConstructPath(p, i, j):
+    i,j = int(i), int(j)
+    if(i==j):
+      print (i,)
+    elif(p[i,j] == -30000):
+      print (i,'-',j)
+    else:
+      ConstructPath(p, i, p[i,j]);
+      print(j,)
+# path reconstruction matrix
+p = np.zeros(graph.shape)
+for i in range(0,v):
+    for j in range(0,v):
+        p[i,j] = i
+        if (i != j and graph[i,j] == 0): 
+            p[i,j] = -30000 
+            graph[i,j] = 30000 # set zeros to any large number which is bigger then the longest way
 
-# your images in an array
-imgs = loadImages(path)
-
-imgs.show()
+for k in range(0,v):
+    for i in range(0,v):
+        for j in range(0,v):
+            if graph[i,j] > graph[i,k] + graph[k,j]:
+                graph[i,j] = graph[i,k] + graph[k,j]
+                p[i,j] = p[k,j]
+# show p matrix
+print(p)
+print(graph)
+ConstructPath(p,1,0)

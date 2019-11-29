@@ -15,13 +15,16 @@ from tkinter.filedialog import askopenfile
 from tkinter.font import Font
 from os import listdir
 from PIL import Image as PImage
+import numpy as np
+
+
 G=nx.DiGraph()
 GP=nx.DiGraph()
 GK=nx.DiGraph()
 GB=nx.DiGraph()
 GD=nx.DiGraph()
-
-
+GF=nx.DiGraph()
+#Graph Plotter Via Networkx and PyPLot
 def plotter(Graph,name):
     pos=nx.get_node_attributes(Graph,'pos')
     fig, ax = plt.subplots(figsize=(40, 30),dpi=100)
@@ -39,6 +42,8 @@ def plotter(Graph,name):
         path=('dijsktra.png')
     elif(name=='bellman'):
         path=('bellmanFord.png')
+    elif(name=='floyd'):
+        path=('FloydWarshall.png')
     plt.savefig(path)
     img = PImage.open(path)
     img.show()
@@ -48,7 +53,8 @@ def plotter(Graph,name):
 
 
 
-
+#File Opener And Parser
+#Insert All vertice and and edges in graph and generate INuputted Graph
 def open_file():
     fileopen = askopenfile(mode ='r', filetypes =[('Text Files', '*.txt')])
     if fileopen is not None:        
@@ -125,6 +131,7 @@ def open_file():
         global source
         source=fileopen.readline()
         source=int(source,10)
+        #print(graph1)
 
 
 
@@ -136,7 +143,64 @@ def open_file():
 
 
 
+#Floyd Warshall Tree IMplementation
+class FloydWarshall():
+    def __init__(self,Graph):
+        self.graph=Graph
+        self.v = no_of_nodes
+        self.p = [[0 for i in range(no_of_nodes)] for j in range(no_of_nodes)]
+    
+    def print_path(self):
+        total=0
+        f=open("Floyd Warshall.txt","w+")
+        f.write("Floyd Warshall Shortest Path Algorithm\n")
+        for i in range(no_of_nodes):
+            n=for_node[i]
+            x=for_x_axis[i]
+            y=for_y_axis[i]
+            GF.add_node(n,pos=(x,y))
+        print ("Vertex Distance from Source")
+        f.write("Vertex Distance from Source\n")
+        for i in range(self.v):
+            print(self.p[source][i],i,self.graph[source][i])
+            f.write(str(self.p[source][i])+"-->"+str(i)+"  "+str(self.graph[source][i])+'\n')
+            GF.add_edge(self.p[source][i],i,weight=self.graph[source][i])
+            total=total+self.graph[source][i]
+        print("Total cost: ",total)
+        f.write("Total Cost: "+str(total)+'\n')
+        plotter(GF,'floyd')
+        f.close()
+    def floyd_warshal(self):
+        for i in range(0,self.v):
+            for j in range(0,self.v):
+                self.p[i][j]=0
+                
+        for i in range(0,self.v):
+            for j in range(0,self.v):
+                self.p[i][j] = i
+                if (i != j and self.graph[i][j] == 0): 
+                    self.p[i][j] = -30000 
+                    self.graph[i][j] = 30000 # set zeros to any large number which is bigger then the longest way
+                    
+        for k in range(0,self.v):
+            for i in range(0,self.v):
+                for j in range(0,self.v):
+                    if self.graph[i][j] > self.graph[i][k] + self.graph[k][j]:
+                        self.graph[i][j] = self.graph[i][k] + self.graph[k][j]
+                        self.p[i][j] = self.p[k][j]
+        self.print_path()
+    
 
+            
+        
+      
+
+
+
+
+
+
+#Dijsktra Implementation
 
 
 class DjikstraGraph():
@@ -216,7 +280,19 @@ class DjikstraGraph():
                     total=total+dist[v]
         self.printSolution(dist,source1,total)
 
+#Dijsktra Finished
 
+
+
+
+
+
+
+
+
+
+
+#Bellman Ford Graph Implemntaion
 
 class Graph:
 
@@ -270,8 +346,17 @@ class Graph:
 
         self.printArr(dist,total,source1)
 
+#Bellman Ford Finshed
 
-#kruskal
+
+
+
+
+
+
+
+
+#Kruskal Graph Implementation
 class KruskalGraph:
 
     def __init__(self,vertices):
@@ -368,18 +453,18 @@ class KruskalGraph:
         print(total)
         f.write("Total Cost: "+str(total))
         plotter(GK,'kruskal')
-#        pos=nx.get_node_attributes(GK,'pos')
-#        fig, ax = plt.subplots(figsize=(40, 30),dpi=100)
-#        nx.draw_networkx_nodes(GK,pos,with_labels=True,ax=ax)
-#        labels = nx.get_edge_attributes(GK,'weight')
-#        nx.draw_networkx_labels(GK,pos)
-#        nx.draw_networkx_edge_labels(GK,pos,edge_labels=labels)
-#        nx.draw_networkx_edges(GK,pos,edge_labels=labels)
-#        ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
-#        plt.savefig('/root/Pictures/Kruskal.png')
         return
 
+#Krsukal Finished
 
+
+
+
+
+
+
+
+#Prims Graph Implementation
 
 class PrimsGraph():
 
@@ -390,7 +475,7 @@ class PrimsGraph():
 
     # A utility function to print the constructed MST stored in parent[]
     def printMST(self, parent):
-        
+        GP.clear()
         f=open("Prims.txt","w+")
         f.write("Prims Minimum Spanning Tree\n\n")
         total = 0
@@ -475,7 +560,19 @@ class PrimsGraph():
 
         self.printMST(parent)
 
+#Prims Finished
 
+
+
+
+
+
+#Graph Caller Segment
+        
+def Floyd_Warshall():
+    print("Floyd Warshall Algorithm")
+    gf=FloydWarshall(graph1)
+    gf.floyd_warshal()    
 
 def bellman_ford():
     print("BellmanFord SP")
@@ -539,6 +636,8 @@ Label(root,  text="" ,font=my_font).pack()
 Label(root,  text="Shortest Path Algorithm:" ,font=my_font).pack()
 btn5 = Button(root, text ='Run Dijsktra',command = lambda:dijsktra())
 btn5.pack(pady = 20)
+btn8 = Button(root, text ='Run FloydWarshall',command = lambda:Floyd_Warshall())
+btn8.pack(pady = 20)
 btn6 = Button(root, text ='Run BellmanFord',command = lambda:bellman_ford())
 btn6.pack(pady = 10)
 Label(root,  text="" ,font=my_font).pack()
