@@ -24,13 +24,14 @@ def loading():
     except StopIteration:
         # the files iterator is exhausted
         root.destroy()
-        import SelectFile.py 
+        #import SelectFile.py 
 
 
 class Example(Frame):
+    
     def __init__(self, master, *pargs):
         Frame.__init__(self, master, *pargs)
-        self.image = Image.open("/root/Pictures/Graph3.png")
+        self.image = Image.open("kruskal.png")
         self.img_copy= self.image.copy()
         self.background_image = ImageTk.PhotoImage(self.image)
         self.background = Label(self, image=self.background_image)
