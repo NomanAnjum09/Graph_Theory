@@ -55,14 +55,26 @@ GB=nx.DiGraph()
 GD=nx.DiGraph()
 GF=nx.DiGraph()
 #Graph Plotter Via Networkx and PyPLot
-def plotter(Graph,name):
+def plotter(Graph,name,total):
     pos=nx.get_node_attributes(Graph,'pos')
     fig, ax = plt.subplots(figsize=(40, 30),dpi=100)
+    if(name=='prims'):
+        title='Prims Minimum Spanning Tree'
+    elif(name=='kruskal'):
+        title='Kruskal Minimum Spanning Tree'
+    elif(name=='dijsktra'):
+        title='Dijsktra Shortest Path'
+    elif(name=='bellman'):
+        title='BellmanFord Shortest Path'
+    elif(name=='floyd'):
+        title='FloydWarshall Shortest Path'
+    ax.set_title(title+"  Total Cost = "+total)
+    
     nx.draw_networkx_nodes(Graph,pos,with_labels=True,ax=ax)
     labels = nx.get_edge_attributes(Graph,'weight')
     nx.draw_networkx_labels(Graph,pos)
     nx.draw_networkx_edge_labels(Graph,pos,edge_labels=labels)
-    nx.draw_networkx_edges(Graph,pos,edge_labels=labels)
+    nx.draw_networkx_edges(Graph,pos,edge_labels=labels,edge_color='r')
     ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
     if(name=='prims'):
         path=('prims.png')
@@ -199,7 +211,7 @@ class FloydWarshall():
             total=total+self.graph[source][i]
         print("Total cost: ",total)
         f.write("Total Cost: "+str(total)+'\n')
-        plotter(GF,'floyd')
+        plotter(GF,'floyd',str(total))
         f.close()
     def floyd_warshal(self):
         for i in range(0,self.v):
@@ -262,7 +274,7 @@ class DjikstraGraph():
             GD.add_edge(source[node][0],node,weight=dist[node])
         print("Total cost: ",total)
         f.write("Total Cost: "+str(total)+'\n')
-        plotter(GD,'dijsktra')
+        plotter(GD,'dijsktra',str(total))
         f.close()
         #print(total)
     # A utility function to find the vertex with
@@ -355,7 +367,7 @@ class Graph:
             total=total+dist[i]
         print(total)
         f.write("Total Cost: "+str(total))
-        plotter(GB,'bellman')
+        plotter(GB,'bellman',str(total))
 
     def BellmanFord(self, src):
         dist = [float("Inf")] * self.V
@@ -486,7 +498,7 @@ class KruskalGraph:
             GK.add_edge(u,v,weight=weight)
         print(total)
         f.write("Total Cost: "+str(total))
-        plotter(GK,'kruskal')
+        plotter(GK,'kruskal',str(total))
         return
 
 #Krsukal Finished
@@ -527,7 +539,7 @@ class PrimsGraph():
             f.write(str(parent[i])+"-->"+str(i)+"  "+str(self.graph[i][ parent[i]])+"\n")
         print(total)
         f.write("Total Cost: "+str(total))
-        plotter(GP,'prims')
+        plotter(GP,'prims',str(total))
 #        pos=nx.get_node_attributes(GP,'pos')
 #        fig, ax = plt.subplots(figsize=(40, 30),dpi=100)
 #        nx.draw_networkx_nodes(GP,pos,with_labels=True,ax=ax)
@@ -648,33 +660,10 @@ def plot_actual():
 
 #StartGUI
 def vp_start_gui():
+    
+    
     '''Starting point when module is the main routine.'''
     page_support1.init(root, top)
-    
-    my_font = Font(family="Times New Roman", size=33, weight="bold" )
-    Label(root,foreground="#5abfb8",background="#1e2c63", text="Select A .txt File From Your System" ,font=my_font).pack()
-    btn1 = ttk.Button(root,style='green/black.TButton',text ='Open', command = lambda:open_file())
-    btn1.pack(pady = 10)
-    btn2 = Button(root, text ='SeeActualGraph',command = lambda:plot_actual())
-    btn2.pack(pady = 10)
-    Label(root, foreground="#5abfb8",background="#1e2c63", text="Minimum Spanning Trees Algorithm:" ,font=my_font).pack()
-    
-    btn3 = Button(root, text ='Run Prims',command = lambda:prims())
-    btn3.pack(pady = 10)
-    btn4 = Button(root, text ='Run Kruskal',command = lambda:kruskal())
-    btn4.pack(pady = 10)
-    Label(root, foreground="#5abfb8",background="#1e2c63", text="" ,font=my_font).pack()
-    Label(root, foreground="#5abfb8",background="#1e2c63", text="Shortest Path Algorithm:" ,font=my_font).pack()
-    btn5 = Button(root, text ='Run Dijsktra',command = lambda:dijsktra())
-    btn5.pack(pady = 10)
-    btn8 = Button(root, text ='Run FloydWarshall',command = lambda:Floyd_Warshall())
-    btn8.pack(pady = 20)
-    btn6 = Button(root, text ='Run BellmanFord',command = lambda:bellman_ford())
-    btn6.pack(pady = 10)
-    Label(root,foreground="#5abfb8",background="#1e2c63",  text="" ,font=my_font).pack()
-    Label(root,foreground="#5abfb8",background="#1e2c63",  text="Clustering Cofficient(Local Clustering):" ,font=my_font).pack()
-    btn7 = Button(root,text ='Run Local Clustering')
-    btn7.pack(pady = 10)
     root.mainloop()
 
 w = None
@@ -685,6 +674,7 @@ def create_Toplevel1(root, *args, **kwargs):
     w = tk.Toplevel (root)
     top = Toplevel1 (w)
     page_support1.init(w, top, *args, **kwargs)
+   
     return (w, top)
 
 def destroy_Toplevel1():
@@ -708,7 +698,7 @@ class Toplevel1(Frame):
         top.minsize(1, 1)
         top.maxsize(1905, 1050)
         top.resizable(1, 1)
-        top.title("New Toplevel")
+        top.title("Main Page")
         top.configure(relief="groove")
         top.configure(cursor="arrow")
         top.configure(padx="20")
@@ -722,15 +712,40 @@ class Toplevel1(Frame):
         self.background_image = ImageTk.PhotoImage(self.image)
         self.background.configure(image =  self.background_image)
 
+
+
+
 root = tk.Tk()
-top = Toplevel1 (root)
+top = Toplevel1(root)
 C = Canvas(root, bg="blue", height=250, width=300)
 filename = PhotoImage(file = "wgraph.png")
 background_label = Label(root, image=filename)
 background_label.place(x=0, y=0, relwidth=1, relheight=1)
+my_font = Font(family="Times New Roman", size=33, weight="bold" )
+Label(root,foreground="#5abfb8",background="#1e2c63", text="Select A .txt File From Your System" ,font=my_font).pack(pady=100)
+btn1 = ttk.Button(root,style='green/black.TButton',text ='Open', command = lambda:open_file())
+btn1.pack(pady = 10)
+btn2 = Button(root, text ='SeeActualGraph',command = lambda:plot_actual())
+btn2.pack(pady = 10)
+Label(root, foreground="#5abfb8",background="#1e2c63", text="Minimum Spanning Trees Algorithm:" ,font=my_font).pack()
+    
+btn3 = Button(root, text ='Run Prims',command = lambda:prims())
+btn3.pack(pady = 10)
+btn4 = Button(root, text ='Run Kruskal',command = lambda:kruskal())
+btn4.pack(pady = 10)
+Label(root, foreground="#5abfb8",background="#1e2c63", text="" ,font=my_font).pack()
+Label(root, foreground="#5abfb8",background="#1e2c63", text="Shortest Path Algorithm:" ,font=my_font).pack()
+btn5 = Button(root, text ='Run Dijsktra',command = lambda:dijsktra())
+btn5.pack(pady = 10)
+btn8 = Button(root, text ='Run FloydWarshall',command = lambda:Floyd_Warshall())
+btn8.pack(pady = 20)
+btn6 = Button(root, text ='Run BellmanFord',command = lambda:bellman_ford())
+btn6.pack(pady = 10)
+Label(root,foreground="#5abfb8",background="#1e2c63",  text="" ,font=my_font).pack()
+Label(root,foreground="#5abfb8",background="#1e2c63",  text="Clustering Cofficient(Local Clustering):" ,font=my_font).pack()
+btn7 = Button(root,text ='Run Local Clustering')
+btn7.pack(pady = 10)
 C.pack()
-files = iter(np.arange(1,3000))
-downloaded = IntVar()
 if __name__ == '__main__':
     vp_start_gui()
 

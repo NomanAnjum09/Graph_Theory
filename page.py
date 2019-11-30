@@ -32,7 +32,7 @@ def loading():
     except StopIteration:
         # the files iterator is exhausted
         root.destroy()
-        import final.py 
+        import final
 
 
 
@@ -59,7 +59,6 @@ def vp_start_gui():
     progress.pack(fill=BOTH,side = BOTTOM)
     loading()
     my_font = Font(family="Times New Roman", size=35, weight="bold" )
-   
     Label(root, foreground="#5abfb8" ,background="#1e2c63",  text="Design And Analysis Of Alogorithm" ,font=my_font).pack()
     Label(root, foreground="#5abfb8" ,background="#1e2c63", text="Graph Theory Algorithm Implementation" ,font=("Helvetica",35)).pack()
     Label(root, foreground="#5abfb8" ,background="#1e2c63", text="Group Members:" ,font=("Helvetica",30)).pack()
