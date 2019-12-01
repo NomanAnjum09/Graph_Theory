@@ -147,9 +147,13 @@ def clustering_coefficient(G,n):
     
     f.write("\n\nSum Of Clustering = ")
     result=0
+    tot=0
     for k in G:
+        tot=tot+1
         result+=nx.clustering(G,k)
     f.write(str(result))
+    f.write("\n\nAverage Clustering = ")
+    f.write(str(result/tot))
     f.close()
 
 
