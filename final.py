@@ -18,6 +18,7 @@ from tkinter.font import Font
 from tkinter import *
 import numpy as np
 from PIL import Image, ImageTk
+import subprocess
 try:
     import Tkinter as tk
 except ImportError:
@@ -155,8 +156,9 @@ def clustering_coefficient(G,n):
     f.write("\n\nAverage Clustering = ")
     f.write(str(result/tot))
     f.close()
-
-
+    subprocess.call(['leafpad', 'LocalClustering.txt'])
+#Comment above line and replace from commented line below for windows
+#   subprocess.call(['cmd.exe', '/c', 'file.txt'])
     global clustanswer
     clustanswer=clusteringCoefficientOfNode
 
