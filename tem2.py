@@ -1,53 +1,40 @@
-import sys
-    
-try:
-    import Tkinter as tk
-except ImportError:
-    import tkinter as tk
-try:
-    import ttk
-    py3 = False
-except ImportError:
-    import tkinter.ttk as ttk
-    py3 = True
- 
-def vp_start_gui():
-    '''Starting point when module is the main routine.'''
-    global val, w, root
-    root = tk.Tk()
-    top = Toplevel1 (root)
-    page_support.init(root, top)
-    root.mainloop()
-    
-w = None
-def create_Toplevel1(root, *args, **kwargs):
-    '''Starting point when module is imported by another program.'''
-    global w, w_win, rt
-    rt = root
-    w = tk.Toplevel (root)
-    top = Toplevel1 (w)
-    page_support.init(w, top, *args, **kwargs)
-    return (w, top)
-def destroy_Toplevel1():
-    global w
-    w.destroy()
-    w = None
-class Toplevel1:
-    def __init__(self, top=None):
-        '''This class configures and populates the toplevel window.
-           top is the toplevel containing window.'''
-        _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
-        _fgcolor = '#000000'  # X11 color: 'black'
-        _compcolor = '#d9d9d9' # X11 color: 'gray85'
-        _ana1color = '#d9d9d9' # X11 color: 'gray85'
-        _ana2color = '#ececec' # Closest X11 color: 'gray92'
-        top.geometry("753x986+397+51")
-        top.minsize(1, 1)
-        top.maxsize(1905, 1050)
-        top.resizable(1, 1)
-        top.title("New Toplevel")
-        top.configure(relief="groove")
-        top.configure(cursor="arrow")
-        top.configure(padx="20")
-if __name__ == '__main__':
-    vp_start_gui()
+import networkx as nx
+
+
+#create graph
+G=nx.Graph()
+G.add_edges_from([(0,1),(0,2),(0,4),(0,3),(0,5),(1,7),(1,10),(1,11),(1,12),(2,4),(2,5),(2,3),(3,4),(5,8),(5,6),(6,8),(6,9),(6,7),(7,9),(7,10),(10,11),(10,12),(11,13),(12,13)])
+
+
+clusteringCoefficientOfNode = []
+
+def clustering_coefficient(G,n):
+    # this will store the mapping of node/coefficient
+    clusteringDict = {}
+    for node in G:
+
+        neighboursOfNode = []
+        nodesWithMutualFriends = []
+
+        # store all neighbors of the node in an array so we can compare
+        for neighbour in G.neighbors(node):
+            neighboursOfNode.append(neighbour)
+
+        for neighbour in G.neighbors(node):
+            for second_layer_neighbour in G.neighbors(neighbour):
+                # compare if any second degree neighbour is also a first degree neighbour (this makes a triangle)
+                # if so, append it to the mutual friends list
+                if second_layer_neighbour in neighboursOfNode:
+                    nodesWithMutualFriends.append(second_layer_neighbour)
+
+        # filter duplicates from the mutual friend array
+        nodesWithMutualFriends = list((nodesWithMutualFriends))
+
+        # apply coefficient formula to calculate
+        if len(nodesWithMutualFriends):
+            clusteringCoefficientOfNode.append((float(len(list(nodesWithMutualFriends))))/((float(len(list(G.neighbors(node)))) * (float(len(list(G.neighbors(node)))) - 1))))
+        clusteringDict[node] = clusteringCoefficientOfNode
+    print(clusteringCoefficientOfNode[n])
+
+
+clustering_coefficient(G,2)

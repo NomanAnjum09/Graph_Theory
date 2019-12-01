@@ -48,6 +48,10 @@ from PIL import Image as PImage
 import numpy as np
 from tkinter import ttk
 
+
+
+
+
 G=nx.DiGraph()
 GP=nx.DiGraph()
 GK=nx.DiGraph()
@@ -93,6 +97,64 @@ def plotter(Graph,name,total):
 
 
 
+##
+    ##
+    ##
+    ##Local Clustering
+#clusteringCoefficientOfNode = []
+    
+clusteringCoefficientOfNode = 0
+clustanswer=0
+def clustering_coefficient(G,n):
+    # this will store the mapping of node/coefficient
+    global clusteringCoefficientOfNode
+    clusteringDict = {}
+    #for node in G:
+    for i in range(1):
+
+        neighboursOfNode = []
+        nodesWithMutualFriends = []
+
+        # store all neighbors of the node in an array so we can compare
+        for neighbour in G.neighbors(n):
+            neighboursOfNode.append(neighbour)
+
+        for neighbour in G.neighbors(n):
+            for second_layer_neighbour in G.neighbors(neighbour):
+                # compare if any second degree neighbour is also a first degree neighbour (this makes a triangle)
+                # if so, append it to the mutual friends list
+                if second_layer_neighbour in neighboursOfNode:
+                    nodesWithMutualFriends.append(second_layer_neighbour)
+
+        # filter duplicates from the mutual friend array
+        nodesWithMutualFriends = list((nodesWithMutualFriends))
+
+        # apply coefficient formula to calculate
+        if len(nodesWithMutualFriends):
+            #.append()
+            clusteringCoefficientOfNode=((float(len(list(nodesWithMutualFriends))))/((float(len(list(G.neighbors(n)))) * (float(len(list(G.neighbors(n)))) - 1))))
+        #clusteringDict [node]= clusteringCoefficientOfNode
+    print("Implemented Local Clustering Cofficient")
+    print(clusteringCoefficientOfNode)
+    f=open("LocalClustering.txt","w+")
+    f.write("LocalClustering Cofficient\n")
+    f.write(str(clusteringCoefficientOfNode))
+    f.write("\n\n")
+    f.write("Clustering Cofficient From Networkx\n")
+    f.write(str(nx.clustering(G,n)))
+    f.write("\n\nComplete Clustering Of Graph\n")
+    f.write(str(nx.clustering(G)))
+    
+    f.write("\n\nSum Of Clustering = ")
+    result=0
+    for k in G:
+        result+=nx.clustering(G,k)
+    f.write(str(result))
+    f.close()
+
+
+    global clustanswer
+    clustanswer=clusteringCoefficientOfNode
 
 
 #File Opener And Parser
@@ -160,6 +222,7 @@ def open_file():
         global graph1
         graph1=[[0 for x in range(no_of_nodes)] for y in range(no_of_nodes)]
         print(lengthofnode)
+        
         #for kruskal definition
         global gk
         global g
@@ -173,6 +236,11 @@ def open_file():
         global source
         source=fileopen.readline()
         source=int(source,10)
+        ## NX NX NX NX
+        print("NX clustering")
+#        for k in range(0,no_of_nodes):
+#            print(nx.clustering(G,k),end =" ")
+        print(nx.clustering(G,source))
         #print(graph1)
 
 
@@ -207,7 +275,15 @@ class FloydWarshall():
         for i in range(self.v):
             print(self.p[source][i],i,self.graph[source][i])
             f.write(str(self.p[source][i])+"-->"+str(i)+"  "+str(self.graph[source][i])+'\n')
-            GF.add_edge(self.p[source][i],i,weight=self.graph[source][i])
+            #GF.add_edge(self.p[source][i],i,weight=self.graph[source][i])
+            
+            #info=(G.get_edge_data(self.p[source][i],i))
+            info=nx.get_edge_attributes(G,'weight')
+            try:
+                weight=info[(self.p[source][i],i)]
+            except:
+                weight=0
+            GF.add_edge(self.p[source][i],i,weight=weight)
             total=total+self.graph[source][i]
         print("Total cost: ",total)
         f.write("Total Cost: "+str(total)+'\n')
@@ -271,7 +347,12 @@ class DjikstraGraph():
             total = total + dist[node]
             print (source[node], node, dist[node])
             f.write(str(source[node][0])+"-->"+str(node)+"  "+str(dist[node])+'\n')
-            GD.add_edge(source[node][0],node,weight=dist[node])
+            info=nx.get_edge_attributes(G,'weight')
+            try:
+                weight=info[(source[node][0],node)]
+            except:
+                weight=0
+            GD.add_edge(source[node][0],node,weight=weight)
         print("Total cost: ",total)
         f.write("Total Cost: "+str(total)+'\n')
         plotter(GD,'dijsktra',str(total))
@@ -362,7 +443,12 @@ class Graph:
         print("Vertex Distance from Source")
         for i in range(self.V):
             print(source1[i],i, dist[i])
-            GB.add_edge(source1[i][0],i,weight=dist[i])
+            info=nx.get_edge_attributes(G,'weight')
+            try:
+                w=info[(source1[i][0],i)]
+            except:
+                w=0
+            GB.add_edge(source1[i][0],i,weight=w)
             f.write(str(source1[i][0])+"-->"+str(i)+"  "+str(dist[i])+"\n")
             total=total+dist[i]
         print(total)
@@ -743,7 +829,7 @@ btn6 = Button(root, text ='Run BellmanFord',command = lambda:bellman_ford())
 btn6.pack(pady = 10)
 Label(root,foreground="#5abfb8",background="#1e2c63",  text="" ,font=my_font).pack()
 Label(root,foreground="#5abfb8",background="#1e2c63",  text="Clustering Cofficient(Local Clustering):" ,font=my_font).pack()
-btn7 = Button(root,text ='Run Local Clustering')
+btn7 = Button(root,text ='Run Local Clustering',command = lambda:clustering_coefficient(G,source))
 btn7.pack(pady = 10)
 C.pack()
 if __name__ == '__main__':
